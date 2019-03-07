@@ -114,7 +114,7 @@ def do_one(dest, my_id, seq, time_out):
     return result
 
 
-def ping(host, time_out=1000):
+def ping(host, times = 1, time_out=1000):
     dest = socket.gethostbyname(host)
     my_id = os.getpid() & 0xFFFF
 
@@ -127,7 +127,7 @@ def ping(host, time_out=1000):
     a = None
 
     print(f"PING {host} ({dest}): {icmp_packet_size} data bytes")
-    for i in range(0, 1):
+    for i in range(0, times):
         result = do_one(dest, my_id, i, time_out)
         transmitted += 1
         if result[2] is not None:
@@ -154,7 +154,7 @@ def ping(host, time_out=1000):
         mx = "na"
 
     print(f"--- {host} ping statistics ---")
-    print(f"{transmitted} packets transmitted, {received} packets received, {lost} packets lost")
+    print(f"{transmitted} packets transmitted, {received} packets received, {lost / transmitted:.3g} % packet loss")
     print(f"round-trip min/avg/max = {mn:.3g}/{a:.3g}/{mx:.3g} ms")
 
 
@@ -162,6 +162,6 @@ def make_socket():
     return socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
 
 
-ping("localhost")
+ping("localhost", 4)
 print(" ")
-ping("google.com")
+ping("google.com", 4)
