@@ -47,14 +47,14 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
 
     # Fill in start
     # Fetch the ICMP header from the IP packet
-    header = struct.unpack("bbHHh", recPacket[20:28])
+    header = struct.unpack("BBHHH", recPacket[20:28])
     data = struct.unpack("d", recPacket[28:36])
 
-    type = header[0];
-    code = header[1];
-    checksum = header[2];
-    id = header[3];
-    sequence = header[4];
+    type = header[0]
+    code = header[1]
+    checksum = header[2]
+    id = header[3]
+    sequence = header[4]
 
     latency = (time.time() - data[0]) / 1000
     timeDisplay = '<1' if latency < 1 else f'{latency:.20f}'
@@ -75,7 +75,7 @@ def sendOnePing(mySocket, destAddr, ID):
     # Make a dummy header with a 0 checksum
 
     # struct --Interpret strings as packed binary data
-    header = struct.pack("bbHHh", ICMP_ECHO_REQUEST, 0, myChecksum, ID, 1)
+    header = struct.pack("BBHHH", ICMP_ECHO_REQUEST, 0, myChecksum, ID, 1)
     data = struct.pack("d", time.time())
 
     # Calculate the checksum on the data and the dummy header.
@@ -88,7 +88,7 @@ def sendOnePing(mySocket, destAddr, ID):
     else:
         myChecksum = htons(myChecksum)
 
-    header = struct.pack("bbHHh", ICMP_ECHO_REQUEST, 0, myChecksum, ID, 1)
+    header = struct.pack("BBHHH", ICMP_ECHO_REQUEST, 0, myChecksum, ID, 1)
     packet = header + data
 
     mySocket.sendto(packet, (destAddr, 1))  # AF_INET address must be tuple, not str
